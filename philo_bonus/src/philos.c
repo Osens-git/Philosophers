@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/27 14:11:26 by vluo              #+#    #+#             */
-/*   Updated: 2025/03/05 16:29:34 by vluo             ###   ########.fr       */
+/*   Updated: 2025/04/29 18:49:49 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,27 +87,23 @@ t_process	*init_main_proc(int *pids, t_philo **philos)
 t_process	*init_process(int nb, t_philo **philos)
 {
 	int			i;
-	int			pid;
 	int			*pids;
 
-	pids = malloc(sizeof(int) * (nb + 2));
+	pids = malloc(sizeof(int) * (nb + 1));
+	pids[nb] = 0;
 	if (pids == 0)
 		return (NULL);
 	i = -1;
-	while (++i < nb + 1)
+	while (++i < nb)
 	{
-		pid = fork();
-		if (pid < 0)
+		pids[i] = fork();
+		if (pids[i] < 0)
 			return (free(pids), NULL);
-		if (pid > 0)
-			pids[i] = pid;
-		else if (pid == 0)
+		if (pids[i] == 0)
 		{
-			if (i != 0)
-				create_proc_thread(philos[i - 1]);
+			create_proc_thread(philos[i]);
 			return (free(pids), NULL);
 		}
 	}
-	pids[i] = 0;
 	return (init_main_proc(pids, philos));
 }

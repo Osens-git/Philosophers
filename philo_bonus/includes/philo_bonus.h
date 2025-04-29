@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 15:01:48 by vluo              #+#    #+#             */
-/*   Updated: 2025/03/12 12:32:41 by vluo             ###   ########.fr       */
+/*   Updated: 2025/04/29 18:26:35 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,9 +29,11 @@
 # define FORKS	"forks"
 # define STOP "stop"
 # define FINISH "finish"
+# define FORKS_LOCK "f_lock"
 
 typedef struct s_locks
 {
+	sem_t	*f_lock;
 	sem_t	*forks;
 	sem_t	*finish;
 	sem_t	*stop;

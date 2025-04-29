@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 11:42:44 by vluo              #+#    #+#             */
-/*   Updated: 2025/03/12 16:02:50 by vluo             ###   ########.fr       */
+/*   Updated: 2025/04/29 18:57:06 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,10 +40,12 @@ int	eat(t_philo *philo)
 	int	st;
 
 	st = philo -> start;
+	sem_wait(philo -> locks -> f_lock);
 	sem_wait(philo -> locks -> forks);
 	printf("%d %d has taken a fork\n", get_real_time() - st, philo->index + 1);
 	sem_wait(philo -> locks -> forks);
 	printf("%d %d has taken a fork\n", get_real_time() - st, philo->index + 1);
+	sem_post(philo -> locks -> f_lock);
 	printf("%d %d is eating\n", get_real_time() - st, philo->index + 1);
 	eating(philo);
 	sem_post(philo -> locks -> forks);
@@ -82,10 +84,6 @@ void	philo_routine(t_philo *philo)
 	int		st;
 
 	st = philo -> start;
-	if (philo -> time_to_die > philo -> time_to_eat)
-		usleep((philo -> time_to_eat / 2) * 1000);
-	else
-		usleep((philo -> time_to_die / 2) * 1000);
 	while (1)
 	{
 		if (philo -> stop != 1)

@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 15:48:49 by vluo              #+#    #+#             */
-/*   Updated: 2025/03/12 12:32:24 by vluo             ###   ########.fr       */
+/*   Updated: 2025/04/29 18:41:40 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,12 +31,13 @@ t_locks	*init_locks(int nb)
 	locks -> finish = sem_open(FINISH, O_CREAT, S_IRUSR | S_IWUSR, 1);
 	sem_unlink(STOP);
 	locks -> stop = sem_open(STOP, O_CREAT, S_IRUSR | S_IWUSR, 1);
-	if (!(locks -> finish || locks -> stop))
-		return (sem_close(locks -> forks), sem_close(locks -> finish),
-			sem_close(locks -> stop), free(locks), NULL);
-	sem_wait(locks -> finish);
-	sem_wait(locks -> stop);
-	return (locks);
+	sem_unlink(FORKS_LOCK);
+	locks -> f_lock = sem_open(FORKS_LOCK, O_CREAT, S_IRUSR | S_IWUSR, 1);
+	if (!(locks -> finish || locks -> stop || locks -> f_lock))
+		return (sem_close(locks->forks), sem_close(locks->finish), sem_close(
+				locks->stop), sem_close(locks->f_lock), free(locks), NULL);
+	return (sem_wait(locks -> finish), sem_wait(locks -> stop),
+		sem_wait(locks->f_lock), sem_post(locks->f_lock), locks);
 }
 
 void	free_locks(t_locks *locks)
@@ -44,6 +45,7 @@ void	free_locks(t_locks *locks)
 	sem_close(locks->forks);
 	sem_close(locks->finish);
 	sem_close(locks->stop);
+	sem_close(locks->f_lock);
 	free(locks);
 }
 
